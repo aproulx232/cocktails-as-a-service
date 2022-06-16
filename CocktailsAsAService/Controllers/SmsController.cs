@@ -12,7 +12,6 @@ namespace CocktailsAsAService.Controllers
         [HttpPost]
         public TwiMLResult Index([FromQuery]SmsRequest request)
         {
-            return GetCocktailResponse();
             //TODO check if we have seen this number before, if not, send welcome message
 
             var message = request.Body.ToLowerInvariant();
@@ -36,7 +35,7 @@ namespace CocktailsAsAService.Controllers
         private TwiMLResult AddToFavoritesResponse()
         {
             var messagingResponse = new MessagingResponse();
-            messagingResponse.Message("Cocktail will be added to favorites list");
+            messagingResponse.Message("Cocktail will be added to favorites list. (Not implemented yet)");
 
             return TwiML(messagingResponse);
         }
