@@ -10,7 +10,7 @@ namespace CocktailsAsAService.Controllers
     public class SmsController : TwilioController
     {
         [HttpPost]
-        public TwiMLResult Index(SmsRequest request)
+        public TwiMLResult Index([FromQuery]SmsRequest request)
         {
             return GetCocktailResponse();
             //TODO check if we have seen this number before, if not, send welcome message
