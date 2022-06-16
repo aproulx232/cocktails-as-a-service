@@ -12,6 +12,9 @@ namespace CocktailsAsAService.Controllers
         [HttpPost]
         public TwiMLResult Index(SmsRequest request)
         {
+            return GetCocktailResponse();
+            //TODO check if we have seen this number before, if not, send welcome message
+
             var message = request.Body.ToLowerInvariant();
 
             return message switch
