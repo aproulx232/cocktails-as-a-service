@@ -23,7 +23,9 @@ namespace CocktailsAsAService.Controllers
         {
             //TODO check if we have seen this number before, if not, send welcome message
 
-            var message = request.Body.ToLowerInvariant();
+            var message = request.Body?.ToLowerInvariant();
+            if (message == null)
+                return GetErrorResponse("message is null");
 
             return message switch
             {
@@ -32,6 +34,14 @@ namespace CocktailsAsAService.Controllers
                 "random" => AddToFavoritesResponse(),
                 _ => await GetCocktail(message)
             };
+        }
+
+        private TwiMLResult GetErrorResponse(string message)
+        {
+            var messagingResponse = new MessagingResponse();
+            messagingResponse.Message(message);
+
+            return TwiML(messagingResponse);
         }
 
         private async Task<TwiMLResult> GetCocktail(string cocktailName)
@@ -58,7 +68,6 @@ namespace CocktailsAsAService.Controllers
         private TwiMLResult GetCocktailResponse(string? message)
         {
             var messagingResponse = new MessagingResponse();
-            //messagingResponse.Message("5 mint leaves, more for garnish\r\n2 ounces white rum\r\n1 ounce fresh lime juice\r\n½ ounce simple syrup\r\nIce\r\nClub soda or sparkling water\r\nLime slices, for garnish");
             messagingResponse.Message(message);
 
             return TwiML(messagingResponse);
