@@ -29,14 +29,15 @@ namespace CocktailsAsAService.Controllers
             {
                 "help" => GetHelpResponse(),
                 "save" => AddToFavoritesResponse(),
+                "random" => AddToFavoritesResponse(),
                 _ => await GetCocktail(message)
             };
         }
 
         private async Task<TwiMLResult> GetCocktail(string cocktailName)
         {
-            var recipe = await _cocktailDbService.GetRecipe(cocktailName);
-            return GetCocktailResponse(recipe);
+            var cocktail = await _cocktailDbService.GetCocktail(cocktailName);
+            return GetCocktailResponse(cocktail.Instructions);
         }
 
         private TwiMLResult GetHelpResponse()
@@ -54,7 +55,7 @@ namespace CocktailsAsAService.Controllers
 
             return TwiML(messagingResponse);
         }
-        private TwiMLResult GetCocktailResponse(string message)
+        private TwiMLResult GetCocktailResponse(string? message)
         {
             var messagingResponse = new MessagingResponse();
             //messagingResponse.Message("5 mint leaves, more for garnish\r\n2 ounces white rum\r\n1 ounce fresh lime juice\r\n½ ounce simple syrup\r\nIce\r\nClub soda or sparkling water\r\nLime slices, for garnish");
