@@ -75,6 +75,7 @@ namespace Infrastructure.CocktailDbService
 
         private static void AddIngredientIfValid(string? ingredient, string? measure, ICollection<Ingredient> ingredients)
         {
+            //TODO deal with case where there is a ingredient but no measurement 
             if (IsIngredientValid(ingredient, measure))
             {
                 ingredients.Add(new Ingredient

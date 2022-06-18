@@ -1,3 +1,4 @@
+using Application;
 using Infrastructure;
 using Infrastructure.CocktailDbService;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +20,11 @@ namespace CocktailsAsAService.Controllers
         }
 
         [HttpGet]
-        public async Task<TwiMLResult> Index([FromQuery]SmsRequest queryRequest)
+        public async Task<TwiMLResult> Index([FromQuery]SmsRequest smsRequest)
         {
             //TODO check if we have seen this number before, if not, send welcome message
 
-            //var message = bodyRequest.Body?.ToLowerInvariant();
-            //if (message == null)
-            //    return GetErrorResponse("body message is null");
-
-            var message = queryRequest.Body?.ToLowerInvariant();
+            var message = smsRequest.Body?.ToLowerInvariant();
             if (message == null)
                 return GetErrorResponse("query message is null");
 
@@ -51,7 +48,7 @@ namespace CocktailsAsAService.Controllers
         private async Task<TwiMLResult> GetCocktail(string cocktailName)
         {
             var cocktail = await _cocktailDbService.GetCocktail(cocktailName);
-            return GetCocktailResponse(cocktail.Instructions);
+            return GetCocktailResponse(cocktail);
         }
 
         private TwiMLResult GetHelpResponse()
@@ -69,10 +66,14 @@ namespace CocktailsAsAService.Controllers
 
             return TwiML(messagingResponse);
         }
-        private TwiMLResult GetCocktailResponse(string? message)
+
+        private TwiMLResult GetCocktailResponse(Cocktail cocktail)
         {
             var messagingResponse = new MessagingResponse();
-            messagingResponse.Message(message);
+            messagingResponse.Message(cocktail.Instructions);
+            var ingredientResponse = cocktail.Ingredients?.Select(i => $"{i.Measurement} {i.Name}")
+                .Aggregate("", (s, s1) => $"{s} \r\n{s1}");
+            messagingResponse.Message(ingredientResponse);
 
             return TwiML(messagingResponse);
         }
