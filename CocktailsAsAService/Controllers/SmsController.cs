@@ -18,16 +18,16 @@ namespace CocktailsAsAService.Controllers
             _cocktailDbService = cocktailDbService ?? throw new ArgumentNullException(nameof(cocktailDbService));
         }
 
-        [HttpPost]
-        public async Task<TwiMLResult> Index([FromQuery]SmsRequest queryRequest, [FromBody] SmsRequest bodyRequest)
+        [HttpGet]
+        public async Task<TwiMLResult> Index([FromQuery]SmsRequest queryRequest)
         {
             //TODO check if we have seen this number before, if not, send welcome message
 
-            var message = bodyRequest.Body?.ToLowerInvariant();
-            if (message == null)
-                return GetErrorResponse("body message is null");
+            //var message = bodyRequest.Body?.ToLowerInvariant();
+            //if (message == null)
+            //    return GetErrorResponse("body message is null");
 
-            message = queryRequest.Body?.ToLowerInvariant();
+            var message = queryRequest.Body?.ToLowerInvariant();
             if (message == null)
                 return GetErrorResponse("query message is null");
 
