@@ -11,12 +11,10 @@ namespace Infrastructure.CocktailDbService
     public class CocktailDbService : ICocktailDbService
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<CocktailDbService> _logger;
 
-        public CocktailDbService(HttpClient httpClient, ILogger<CocktailDbService> logger)
+        public CocktailDbService(HttpClient? httpClient)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<CocktailResponse?> GetCocktail(string cocktailName)
