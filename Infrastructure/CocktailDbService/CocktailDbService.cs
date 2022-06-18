@@ -75,18 +75,15 @@ namespace Infrastructure.CocktailDbService
 
         private static void AddIngredientIfValid(string? ingredient, string? measure, ICollection<Ingredient> ingredients)
         {
-            //TODO deal with case where there is a ingredient but no measurement 
-            if (IsIngredientValid(ingredient, measure))
+            if (string.IsNullOrWhiteSpace(ingredient)) 
+                return;
+            
+            measure ??= string.Empty;
+            ingredients.Add(new Ingredient
             {
-                ingredients.Add(new Ingredient
-                {
-                    Name = ingredient,
-                    Measurement = measure
-                });
-            }
-
-            static bool IsIngredientValid(string? ingredient, string? measure) =>
-                !string.IsNullOrWhiteSpace(ingredient) && !string.IsNullOrWhiteSpace(measure);
+                Name = ingredient,
+                Measurement = measure
+            });
         }
     }
 }

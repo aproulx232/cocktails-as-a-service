@@ -71,6 +71,7 @@ namespace CocktailsAsAService.Controllers
         {
             var messagingResponse = new MessagingResponse();
             messagingResponse.Message(cocktail.Instructions);
+
             var ingredientResponse = cocktail.Ingredients?.Select(i => $"{i.Measurement} {i.Name}")
                 .Aggregate("", (s, s1) => $"{s} \r\n{s1}");
             messagingResponse.Message(ingredientResponse);
