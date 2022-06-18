@@ -19,13 +19,17 @@ namespace CocktailsAsAService.Controllers
         }
 
         [HttpPost]
-        public async Task<TwiMLResult> Index([FromQuery]SmsRequest request)
+        public async Task<TwiMLResult> Index([FromQuery]SmsRequest queryRequest, [FromBody] SmsRequest bodyRequest)
         {
             //TODO check if we have seen this number before, if not, send welcome message
 
-            var message = request.Body?.ToLowerInvariant();
+            var message = bodyRequest.Body?.ToLowerInvariant();
             if (message == null)
-                return GetErrorResponse("message is null");
+                return GetErrorResponse("body message is null");
+
+            message = queryRequest.Body?.ToLowerInvariant();
+            if (message == null)
+                return GetErrorResponse("query message is null");
 
             return message switch
             {
