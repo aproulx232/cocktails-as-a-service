@@ -1,10 +1,10 @@
 ﻿using System.Net;
-using Infrastructure;
+using Application;
 using Infrastructure.CocktailDbService;
 using Polly;
 using Polly.Extensions.Http;
 
-namespace CocktailsAsAService
+namespace Api
 {
     public class Startup
     {
@@ -21,6 +21,8 @@ namespace CocktailsAsAService
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddSingleton<ICocktailProvider, CocktailProvider>();
 
             services.AddHttpClient<ICocktailDbService, CocktailDbService>(client =>
             {

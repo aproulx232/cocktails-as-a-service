@@ -1,4 +1,4 @@
-namespace CocktailsAsAService
+namespace Api
 {
     public static class Program
     {

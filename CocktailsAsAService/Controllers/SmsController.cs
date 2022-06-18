@@ -1,26 +1,24 @@
 using Application;
-using Infrastructure;
-using Infrastructure.CocktailDbService;
 using Microsoft.AspNetCore.Mvc;
 using Twilio.AspNet.Common;
 using Twilio.AspNet.Core;
 using Twilio.TwiML;
 
-namespace CocktailsAsAService.Controllers
+namespace Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class SmsController : TwilioController
     {
-        private readonly ICocktailDbService _cocktailDbService;
+        private readonly ICocktailProvider _cocktailProvider;
 
-        public SmsController(ICocktailDbService cocktailDbService)
+        public SmsController(ICocktailProvider cocktailProvider)
         {
-            _cocktailDbService = cocktailDbService ?? throw new ArgumentNullException(nameof(cocktailDbService));
+            _cocktailProvider = cocktailProvider;
         }
 
         [HttpGet]
-        public async Task<TwiMLResult> Index([FromQuery]SmsRequest smsRequest)
+        public async Task<TwiMLResult> GetCocktailRecipe([FromQuery]SmsRequest smsRequest)
         {
             //TODO check if we have seen this number before, if not, send welcome message
 
@@ -47,7 +45,7 @@ namespace CocktailsAsAService.Controllers
 
         private async Task<TwiMLResult> GetCocktail(string cocktailName)
         {
-            var cocktail = await _cocktailDbService.GetCocktail(cocktailName);
+            var cocktail = await _cocktailProvider.GetCocktail(cocktailName);
             return GetCocktailResponse(cocktail);
         }
 
@@ -72,8 +70,9 @@ namespace CocktailsAsAService.Controllers
             var messagingResponse = new MessagingResponse();
             messagingResponse.Message(cocktail.Instructions);
 
-            var ingredientResponse = cocktail.Ingredients?.Select(i => $"{i.Measurement} {i.Name}")
-                .Aggregate("", (s, s1) => $"{s} \r\n{s1}");
+            var ingredientResponse = cocktail.Ingredients?
+                .Select(i => $"{i.Name} {i.Measurement}")
+                .Aggregate(string.Empty, (s, s1) => $"{s}\r\n{s1}");
             messagingResponse.Message(ingredientResponse);
 
             return TwiML(messagingResponse);
