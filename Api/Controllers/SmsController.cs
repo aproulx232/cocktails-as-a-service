@@ -71,7 +71,7 @@ namespace Api.Controllers
             messagingResponse.Message(cocktail.Instructions);
 
             var ingredientResponse = cocktail.Ingredients?
-                .Select(i => $"{i.Name} {i.Measurement}")
+                .Select(i => $"{i.Measurement} {i.Name}")
                 .Aggregate(string.Empty, (s, s1) => $"{s}\r\n{s1}");
             messagingResponse.Message(ingredientResponse);
 

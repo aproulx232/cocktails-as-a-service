@@ -11,7 +11,7 @@ namespace Application
     {
         private readonly ICocktailDbService _cocktailDbService;
 
-        public CocktailProvider(ICocktailDbService cocktailDbService)
+        public CocktailProvider(ICocktailDbService? cocktailDbService)
         {
             _cocktailDbService = cocktailDbService ?? throw new ArgumentNullException(nameof(cocktailDbService));
         }
