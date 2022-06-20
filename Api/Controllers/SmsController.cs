@@ -12,9 +12,9 @@ namespace Api.Controllers
     {
         private readonly ICocktailProvider _cocktailProvider;
 
-        public SmsController(ICocktailProvider cocktailProvider)
+        public SmsController(ICocktailProvider? cocktailProvider)
         {
-            _cocktailProvider = cocktailProvider;
+            _cocktailProvider = cocktailProvider ?? throw new ArgumentNullException(nameof(cocktailProvider));
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace Api.Controllers
         {
             //TODO check if we have seen this number before, if not, send welcome message
 
-            var message = smsRequest.Body?.ToLowerInvariant();
+            var message = smsRequest.Body?.ToLowerInvariant().Trim();
             if (message == null)
                 return GetErrorResponse("query message is null");
 
@@ -45,8 +45,15 @@ namespace Api.Controllers
 
         private async Task<TwiMLResult> GetCocktail(string cocktailName)
         {
-            var cocktail = await _cocktailProvider.GetCocktail(cocktailName);
-            return GetCocktailResponse(cocktail);
+            try
+            {
+                var cocktail = await _cocktailProvider.GetCocktail(cocktailName);
+                return GetCocktailResponse(cocktail);
+            }
+            catch (Exception)
+            {
+                return GetErrorResponse("Unknown cocktail");
+            }
         }
 
         private TwiMLResult GetHelpResponse()
