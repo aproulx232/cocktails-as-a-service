@@ -21,11 +21,22 @@ namespace Api.Test.Acceptance.Features
         public async Task GetCocktailRecipeScenario()
         {
             GivenValidRequest();
-            GivenSuccessfulCallToCocktailDb();
+            GivenSuccessfulDrinkResponseFromCocktailDb();
 
             await WhenCallingGetCocktailRecipeEndpoint();
 
-            await ThenResponseIs(HttpStatusCode.OK, CreatedExpectedResponse());
+            await ThenResponseIs(HttpStatusCode.OK, CreatedExpectedSuccessResponse());
+        }
+
+        [Fact(DisplayName = "Given an unknown cocktail name, Then the error message is sent to the user")]
+        public async Task UnknownCocktailRecipeScenario()
+        {
+            GivenValidRequest();
+            GivenUnknownDrinkResponseFromCocktailDb();
+
+            await WhenCallingGetCocktailRecipeEndpoint();
+
+            await ThenResponseIs(HttpStatusCode.OK, CreatedExpectedUnknownResponse());
         }
 
         private void GivenValidRequest()
@@ -47,7 +58,7 @@ namespace Api.Test.Acceptance.Features
             };
         }
 
-        private void GivenSuccessfulCallToCocktailDb()
+        private void GivenSuccessfulDrinkResponseFromCocktailDb()
         {
             var cocktailResponse = new CocktailResponse
             {
@@ -61,6 +72,20 @@ namespace Api.Test.Acceptance.Features
                    }
                }
             };
+            SetupSuccessfulCallToCocktailDb(cocktailResponse);
+        }
+
+        private void GivenUnknownDrinkResponseFromCocktailDb()
+        {
+            var cocktailResponse = new CocktailResponse
+            {
+                Drinks = null
+            };
+            SetupSuccessfulCallToCocktailDb(cocktailResponse);
+        }
+
+        private void SetupSuccessfulCallToCocktailDb(CocktailResponse cocktailResponse)
+        {
             var response = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
@@ -80,9 +105,14 @@ namespace Api.Test.Acceptance.Features
             HttpResponse = await HttpClient.GetAsync(_requestUri);
         }
 
-        private static string CreatedExpectedResponse()
+        private static string CreatedExpectedSuccessResponse()
         {
             return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Response>\r\n  <Message>MockInstructions</Message>\r\n  <Message>\r\nMockMeasure1 MockIngredient1</Message>\r\n</Response>";
+        } 
+
+        private static string CreatedExpectedUnknownResponse()
+        {
+            return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Response>\r\n  <Message>Unknown cocktail</Message>\r\n</Response>";
         }
     }
 }
