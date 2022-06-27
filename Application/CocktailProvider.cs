@@ -5,6 +5,7 @@ namespace Application
     public interface ICocktailProvider
     {
         Task<Cocktail> GetCocktail(string cocktailName);
+        Task<Cocktail> GetRandomCocktail();
     }
 
     public class CocktailProvider : ICocktailProvider
@@ -19,6 +20,13 @@ namespace Application
         public async Task<Cocktail> GetCocktail(string cocktailName)
         {
            var cocktailResponse = await _cocktailDbService.GetCocktail(cocktailName);
+
+           return MapToCocktail(cocktailResponse);
+        }
+
+        public async Task<Cocktail> GetRandomCocktail()
+        {
+           var cocktailResponse = await _cocktailDbService.GetRandomCocktail();
 
            return MapToCocktail(cocktailResponse);
         }

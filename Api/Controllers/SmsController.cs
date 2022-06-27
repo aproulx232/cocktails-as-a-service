@@ -30,7 +30,7 @@ namespace Api.Controllers
             {
                 "help" => GetHelpResponse(),
                 "save" => AddToFavoritesResponse(),
-                "random" => AddToFavoritesResponse(),
+                "random" => await GetRandomCocktail(),
                 _ => await GetCocktail(message)
             };
         }
@@ -43,18 +43,6 @@ namespace Api.Controllers
             return TwiML(messagingResponse);
         }
 
-        private async Task<TwiMLResult> GetCocktail(string cocktailName)
-        {
-            try
-            {
-                var cocktail = await _cocktailProvider.GetCocktail(cocktailName);
-                return GetCocktailResponse(cocktail);
-            }
-            catch (Exception)
-            {
-                return GetErrorResponse("Unknown cocktail");
-            }
-        }
 
         private TwiMLResult GetHelpResponse()
         {
@@ -72,10 +60,37 @@ namespace Api.Controllers
             return TwiML(messagingResponse);
         }
 
+        private async Task<TwiMLResult> GetRandomCocktail()
+        {
+            try
+            {
+                var cocktail = await _cocktailProvider.GetRandomCocktail();
+                return GetCocktailResponse(cocktail);
+            }
+            catch (Exception)
+            {
+                return GetErrorResponse("Failed to get random cocktail");
+            }
+        }
+
+        private async Task<TwiMLResult> GetCocktail(string cocktailName)
+        {
+            try
+            {
+                var cocktail = await _cocktailProvider.GetCocktail(cocktailName);
+                return GetCocktailResponse(cocktail);
+            }
+            catch (Exception)
+            {
+                return GetErrorResponse("Unknown cocktail");
+            }
+        }
+
         private TwiMLResult GetCocktailResponse(Cocktail cocktail)
         {
             var messagingResponse = new MessagingResponse();
-            messagingResponse.Message(cocktail.Instructions);
+            var instructionsResponse = $"{cocktail.Name}: {cocktail.Instructions}";
+            messagingResponse.Message(instructionsResponse);
 
             var ingredientResponse = cocktail.Ingredients?
                 .Select(i => $"{i.Measurement} {i.Name}")
