@@ -66,13 +66,14 @@ namespace Api.Test.Acceptance.Features
                {
                    new()
                    {
+                       Name = "MockName",
                        Instructions = "MockInstructions",
                        Ingredient1 = "MockIngredient1",
                        Measure1 = "MockMeasure1"
                    }
                }
             };
-            SetupSuccessfulCallToCocktailDb(cocktailResponse);
+            SetupSuccessfulGetCocktailCallToCocktailDb(cocktailResponse);
         }
 
         private void GivenUnknownDrinkResponseFromCocktailDb()
@@ -81,10 +82,10 @@ namespace Api.Test.Acceptance.Features
             {
                 Drinks = null
             };
-            SetupSuccessfulCallToCocktailDb(cocktailResponse);
+            SetupSuccessfulGetCocktailCallToCocktailDb(cocktailResponse);
         }
 
-        private void SetupSuccessfulCallToCocktailDb(CocktailResponse cocktailResponse)
+        private void SetupSuccessfulGetCocktailCallToCocktailDb(CocktailResponse cocktailResponse)
         {
             var response = new HttpResponseMessage
             {
@@ -107,7 +108,7 @@ namespace Api.Test.Acceptance.Features
 
         private static string CreatedExpectedSuccessResponse()
         {
-            return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Response>\r\n  <Message>MockInstructions</Message>\r\n  <Message>\r\nMockMeasure1 MockIngredient1</Message>\r\n</Response>";
+            return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Response>\r\n  <Message>MockName: MockInstructions</Message>\r\n  <Message>\r\nMockMeasure1 MockIngredient1</Message>\r\n</Response>";
         } 
 
         private static string CreatedExpectedUnknownResponse()
