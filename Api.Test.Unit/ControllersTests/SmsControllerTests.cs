@@ -40,6 +40,7 @@ namespace Api.Test.Unit.ControllersTests
                  var result = await _smsController.GetCocktailRecipe(smsRequest);
 
                 _cocktailProvider.VerifyAll();
+                result.Data.Should().Contain(cocktail.Name);
                 result.Data.Should().Contain(cocktail.Instructions);
                 result.Data.Should().Contain(cocktail.Ingredients!.First().Name);
                 result.Data.Should().Contain(cocktail.Ingredients!.First().Name);
@@ -53,6 +54,36 @@ namespace Api.Test.Unit.ControllersTests
                 var result = await _smsController.GetCocktailRecipe(smsRequest);
 
                 result.Data.Should().Contain("Unknown cocktail");
+            }
+
+            [Theory]
+            [InlineAutoData("Random")]
+            [InlineAutoData("random")]
+            [InlineAutoData("RANDOM")]
+            [InlineAutoData(" Random ")]
+            public async Task GivenSmsRequestWithRandom_ShouldGetCocktail(string randomRequestBody, SmsRequest smsRequest, Cocktail cocktail)
+            {
+                smsRequest.Body = randomRequestBody;
+                _cocktailProvider.Setup(cp => cp.GetRandomCocktail()).ReturnsAsync(cocktail);
+
+                var result = await _smsController.GetCocktailRecipe(smsRequest);
+
+                _cocktailProvider.VerifyAll();
+                result.Data.Should().Contain(cocktail.Name);
+                result.Data.Should().Contain(cocktail.Instructions);
+                result.Data.Should().Contain(cocktail.Ingredients!.First().Name);
+                result.Data.Should().Contain(cocktail.Ingredients!.First().Name);
+            }
+
+            [Theory, AutoData]
+            public async Task GivenGetRandomCocktailException_ShouldReturnErrorResponse(SmsRequest smsRequest)
+            {
+                smsRequest.Body = "Random";
+                _cocktailProvider.Setup(cp => cp.GetRandomCocktail()).ThrowsAsync(new Exception());
+
+                var result = await _smsController.GetCocktailRecipe(smsRequest);
+
+                result.Data.Should().Contain("Failed to get random cocktail");
             }
         }
     }

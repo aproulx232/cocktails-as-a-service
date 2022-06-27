@@ -55,5 +55,40 @@ namespace Infrastructure.Test.Unit.CocktailDbServiceTests
                 await subject.Should().ThrowAsync<Exception>();
             }
         }
+
+        public class GetRandomCocktailTests
+        {
+            private readonly MockHttpClient _mockHttpClient = new();
+            private readonly CocktailDbService.CocktailDbService _cocktailDbService;
+
+            private const string CocktailDbRandomPath = "/api/json/v1/1/random.php";
+
+            public GetRandomCocktailTests()
+            {
+                _cocktailDbService = new CocktailDbService.CocktailDbService(_mockHttpClient.CreateClient());
+            }
+
+            [Theory, AutoData]
+            public async Task GivenCallToGetRandomCocktail_ShouldCallCocktailDb(CocktailResponse cocktailResponse)
+            {
+                var stringContent = JsonConvert.SerializeObject(cocktailResponse);
+                _mockHttpClient.Returns(CocktailDbRandomPath, HttpStatusCode.OK, stringContent);
+
+                var result = await _cocktailDbService.GetRandomCocktail();
+
+                result.Should().BeEquivalentTo(cocktailResponse);
+            }
+
+            [Theory, AutoData]
+            public async Task GivenErrorResponseCode_ShouldThrowException(CocktailResponse cocktailResponse)
+            {
+                var stringContent = JsonConvert.SerializeObject(cocktailResponse);
+                _mockHttpClient.Returns(CocktailDbRandomPath, HttpStatusCode.InternalServerError, stringContent);
+
+                Func<Task> subject = async () => await _cocktailDbService.GetRandomCocktail();
+
+                await subject.Should().ThrowAsync<Exception>();
+            }
+        }
     }
 }
