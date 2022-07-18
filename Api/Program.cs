@@ -15,9 +15,9 @@ namespace Api
                 {
                     webBuilder.ConfigureAppConfiguration((context, configBuilder) =>
                         {
-                            var builtConfig = configBuilder.Build();
-                            var vaultUri = new Uri($"https://{builtConfig.GetValue<string>("CocktailsAsAServiceVaultName")}.vault.azure.net/");
-                            configBuilder.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
+                            //var builtConfig = configBuilder.Build();
+                            //var vaultUri = new Uri($"https://{builtConfig.GetValue<string>("CocktailsAsAServiceVaultName")}.vault.azure.net/");
+                            //configBuilder.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
                         })
                         .UseStartup<Startup>();
                 });
