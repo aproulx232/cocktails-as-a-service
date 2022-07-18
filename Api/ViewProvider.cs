@@ -28,7 +28,7 @@ namespace Api
 
         public void AddWelcomeMessage()
         {
-            _messagingResponse.Message("Welcome Message");
+            _messagingResponse.Message("Welcome to Cocktails As A Service!\r\nEnter a cocktail's name to get the recipe or reply \"Random\" to get a random cocktail recipe\r\n");
         }
 
         public void AddErrorMessage(string message)
