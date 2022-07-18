@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using Application;
 using Infrastructure.CocktailDbService;
+using Infrastructure.TableService;
+using Microsoft.Extensions.Azure;
 using Polly;
 using Polly.Extensions.Http;
 
@@ -23,11 +25,20 @@ namespace Api
             services.AddSwaggerGen();
 
             services.AddSingleton<ICocktailProvider, CocktailProvider>();
+            services.AddSingleton<IUserProvider, UserProvider>();
+            services.AddSingleton<IViewProvider, ViewProvider>();
 
             services.AddHttpClient<ICocktailDbService, CocktailDbService>(client =>
             {
                 client.BaseAddress = new Uri("https://www.thecocktaildb.com");
             }).AddPolicyHandler(GetRetryPolicy());
+
+            services.AddAzureClients(azureClientFactoryBuilder =>
+            {
+                azureClientFactoryBuilder.AddTableServiceClient(Configuration.GetValue<string>("TableStorageConnectionString"));
+            });
+            services.AddSingleton<ITableServiceConfiguration>(new TableServiceConfiguration("Users"));
+            services.AddSingleton<ITableService, TableService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,12 +61,10 @@ namespace Api
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-        {
-            return HttpPolicyExtensions
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
+            HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == HttpStatusCode.BadGateway)
                 .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-        }
     }
 }

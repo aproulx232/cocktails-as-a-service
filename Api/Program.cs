@@ -1,3 +1,5 @@
+using Azure.Identity;
+
 namespace Api
 {
     public static class Program
@@ -11,8 +13,11 @@ namespace Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureAppConfiguration((context, config) =>
+                    webBuilder.ConfigureAppConfiguration((context, configBuilder) =>
                         {
+                            var builtConfig = configBuilder.Build();
+                            var vaultUri = new Uri($"https://{builtConfig.GetValue<string>("CocktailsAsAServiceVaultName")}.vault.azure.net/");
+                            configBuilder.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
                         })
                         .UseStartup<Startup>();
                 });
