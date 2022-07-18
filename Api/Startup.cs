@@ -35,7 +35,7 @@ namespace Api
 
             services.AddAzureClients(azureClientFactoryBuilder =>
             {
-                azureClientFactoryBuilder.AddTableServiceClient(Configuration.GetValue<string>("TableStorageConnectionString"));
+                azureClientFactoryBuilder.AddTableServiceClient(Configuration.GetConnectionString("TableStorage"));
             });
             services.AddSingleton<ITableServiceConfiguration>(new TableServiceConfiguration("Users"));
             services.AddSingleton<ITableService, TableService>();
